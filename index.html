@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JARVIS - Next-Gen AI Assistant</title>
+    <title>JARVIS - Next-Gen AI Assistant & Software Studio</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,46 +18,44 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --cyan-glow: rgba(6, 182, 212, 0.5);
-            --emerald-glow: rgba(16, 185, 129, 0.5);
+            --cyan-glow: rgba(6, 182, 212, 0.4);
+            --emerald-glow: rgba(16, 185, 129, 0.4);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
             background-color: #030305;
             color: #f8fafc;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
         
         .glass-nav {
-            background: rgba(3, 3, 5, 0.6);
-            backdrop-filter: saturate(180%) blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(3, 3, 5, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
+            background: rgba(15, 15, 22, 0.6);
+            backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .glass-card:hover {
-            border-color: rgba(6, 182, 212, 0.3);
-            box-shadow: 0 0 30px rgba(6, 182, 212, 0.1);
-        }
-
-        .text-glow-cyan {
-            text-shadow: 0 0 30px var(--cyan-glow);
-        }
-        
-        .text-glow-emerald {
-            text-shadow: 0 0 30px var(--emerald-glow);
+            border-color: rgba(6, 182, 212, 0.4);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.15);
+            transform: translateY(-2px);
         }
 
         .gradient-text {
@@ -73,18 +70,40 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* Interactive Canvas background */
+        #sim-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Simulated Collaborative Cursors */
+        .sim-cursor {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            transition: transform 0.15s ease-out;
+            will-change: transform;
+        }
+
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
             background: #030305; 
         }
         ::-webkit-scrollbar-thumb {
             background: #1e293b; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #334155; 
+            border-radius: 3px;
         }
 
         details > summary {
@@ -94,34 +113,12 @@
             display: none;
         }
 
-        /* Abstract Glows */
-        .orb-1 {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(6,182,212,0.15) 0%, rgba(0,0,0,0) 70%);
-            top: -200px;
-            left: -200px;
-            z-index: -1;
-            border-radius: 50%;
-        }
-        .orb-2 {
-            position: absolute;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, rgba(0,0,0,0) 70%);
-            bottom: -300px;
-            right: -200px;
-            z-index: -1;
-            border-radius: 50%;
-        }
-
         .btn-buy {
             background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
             transition: all 0.3s ease;
         }
         .btn-buy:hover {
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
             transform: translateY(-2px);
         }
 
@@ -130,419 +127,306 @@
             transition: all 0.3s ease;
         }
         .btn-elite:hover {
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-trial {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-trial:hover {
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.5);
             transform: translateY(-2px);
         }
     </style>
 </head>
-<body class="antialiased selection:bg-cyan-500 selection:text-white relative">
+<body class="selection:bg-cyan-500 selection:text-white relative">
 
-    <!-- Background Orbs -->
-    <div class="orb-1"></div>
-    <div class="orb-2"></div>
+    <!-- Background Grid Canvas -->
+    <canvas id="sim-canvas"></canvas>
 
-    <!-- Global Nav -->
-    <nav class="fixed top-0 w-full z-50 glass-nav transition-all duration-300">
-        <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between text-sm font-medium">
-            <a href="#" class="hover:text-cyan-400 transition-colors flex items-center gap-2 font-bold text-lg tracking-wider">
-                <i data-lucide="hexagon" class="text-cyan-400"></i> JARVIS
-            </a>
-            <div class="space-x-8 hidden lg:block text-gray-300">
-                <a href="#overview" class="hover:text-cyan-400 transition-colors">Overview</a>
-                <a href="#features" class="hover:text-cyan-400 transition-colors">Features</a>
-                <a href="#pricing" class="hover:text-cyan-400 transition-colors">Pricing</a>
-                <a href="#setup" class="hover:text-cyan-400 transition-colors">Setup</a>
-                <a href="#faq" class="hover:text-cyan-400 transition-colors">FAQ</a>
-            </div>
-            <div class="flex items-center gap-5">
-                <a href="https://instagram.com/jarvisxali" target="_blank" class="text-gray-400 hover:text-pink-500 transition-colors" title="Follow us on Instagram">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                    </svg>
+    <!-- Simulated Multi-User Cursors Containers -->
+    <div id="cursor-container"></div>
+
+    <div class="content-layer">
+        <!-- Global Nav -->
+        <nav class="fixed top-0 w-full z-50 glass-nav transition-all duration-300">
+            <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between text-sm font-medium">
+                <a href="#" class="hover:text-cyan-400 transition-colors flex items-center gap-2 font-bold text-base tracking-widest mono">
+                    <i data-lucide="terminal" class="text-cyan-400"></i> JARVISXALI
                 </a>
-                <a href="#pricing" class="btn-buy text-white px-5 py-2 rounded-full transition-colors text-sm shadow-lg">
-                    Get JARVIS
-                </a>
+                <div class="space-x-8 hidden lg:block text-gray-400 mono text-xs tracking-wider">
+                    <a href="#overview" class="hover:text-cyan-400 transition-colors">01 // SYSTEMS</a>
+                    <a href="#features" class="hover:text-cyan-400 transition-colors">02 // CAPABILITIES</a>
+                    <a href="#pricing" class="hover:text-cyan-400 transition-colors">03 // DEPLOY</a>
+                    <a href="#faq" class="hover:text-cyan-400 transition-colors">04 // FAQ</a>
+                </div>
+                <div class="flex items-center gap-5">
+                    <a href="https://instagram.com/jarvisxali" target="_blank" class="text-gray-400 hover:text-pink-500 transition-colors" title="Instagram">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </a>
+                    <a href="#pricing" class="btn-buy text-white px-5 py-2 rounded-lg transition-all text-xs font-bold mono tracking-wider uppercase shadow-lg">
+                        Initialize
+                    </a>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <!-- Hero Section -->
-    <header id="overview" class="relative h-screen flex flex-col items-center justify-center overflow-hidden">
-        <div class="hero-text text-center z-10 px-4 w-full max-w-5xl">
-            <div class="inline-block mb-4 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-sm font-semibold tracking-wide backdrop-blur-md">
-                AVAILABLE FOR PHONE & PC
+        <!-- Hero Section -->
+        <header id="overview" class="relative h-screen flex flex-col items-center justify-center px-4">
+            <div class="hero-text text-center z-10 max-w-5xl opacity-0 translate-y-8">
+                <div class="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-md border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-xs font-mono tracking-widest backdrop-blur-md">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span> 42 AGENTS CONSTRUCTING ENVIRONMENT
+                </div>
+                <h1 class="text-5xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-6 text-white">
+                    Systems that <span class="gradient-text">hold up.</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-300 font-medium mb-6 tracking-tight max-w-3xl mx-auto">
+                    Jarvis designs and builds the technical foundations behind useful software, automated systems, and AI modules that can understand and execute.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
+                    <a href="https://jarvisxali.github.io/trial" target="_blank" class="btn-trial w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-sm tracking-widest mono uppercase flex items-center justify-center gap-3 text-white shadow-lg">
+                        <i data-lucide="play-circle" class="w-4 h-4"></i> TRY JARVIS FOR FREE!!
+                    </a>
+                    <a href="#pricing" class="btn-buy w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-sm tracking-widest mono uppercase flex items-center justify-center gap-3">
+                        <i data-lucide="zap" class="w-4 h-4"></i> Start a Conversation
+                    </a>
+                    <a href="#features" class="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-sm tracking-widest mono uppercase border border-gray-800 bg-gray-900/50 hover:bg-gray-800 transition-colors flex items-center justify-center gap-3 text-gray-300">
+                        <i data-lucide="cpu" class="w-4 h-4"></i> Architecture Specs
+                    </a>
+                </div>
             </div>
-            <h1 class="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-6 text-glow-cyan text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400">JARVIS.</h1>
-            <p class="text-2xl md:text-4xl font-semibold text-white mb-6 tracking-tight">Intelligence, Unleashed & Evolving.</p>
-            <p class="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-10 leading-relaxed">
-                Transform your device into a hyper-intelligent entity. Experience screenshare analysis, native system control, and an AI that can <strong class="text-emerald-400">write its own code</strong> to build new features on command.
-            </p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="#pricing" class="btn-buy w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2">
-                    <i data-lucide="zap"></i> View Pricing
-                </a>
-                <a href="#features" class="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg border border-gray-700 hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
-                    <i data-lucide="cpu"></i> See Capabilities
-                </a>
-            </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Scroll-Triggered Feature Narrative -->
-    <section id="scroll-narrative" class="relative h-[400vh] bg-[#030305]">
-        <div class="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
-            <div class="absolute inset-0 flex items-center justify-center">
-                <h2 class="scroll-text text-4xl md:text-7xl font-bold tracking-tighter text-center px-4 opacity-0 absolute">
-                    Total Control.<br><span class="text-gray-500 text-3xl md:text-5xl">Screenshare & Camera Access.</span>
-                </h2>
-                <h2 class="scroll-text text-4xl md:text-7xl font-bold tracking-tighter text-center px-4 opacity-0 absolute">
-                    Seamless Automation.<br><span class="text-gray-500 text-3xl md:text-5xl">WhatsApp Auto-Replies & More.</span>
-                </h2>
-                <h2 class="scroll-text text-4xl md:text-7xl font-bold tracking-tighter text-center px-4 opacity-0 absolute">
-                    Autonomous Evolution.<br><span class="text-emerald-500 text-3xl md:text-5xl">It codes itself upon request.</span>
-                </h2>
-                <h2 class="scroll-text text-5xl md:text-8xl font-black tracking-tighter text-center px-4 opacity-0 absolute gradient-text">
-                    JARVIS.<br><span class="text-gray-300 text-3xl md:text-5xl font-medium tracking-tight">The ultimate AI companion.</span>
-                </h2>
-            </div>
-        </div>
-    </section>
-
-    <!-- Detailed Features (Pro vs Elite) -->
-    <section id="features" class="py-32 relative">
-        <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-20">
-                <h2 class="text-4xl md:text-6xl font-bold tracking-tight mb-4">Unparalleled Capabilities</h2>
-                <p class="text-xl text-gray-400">Choose the level of intelligence that suits your workflow.</p>
+        <!-- Detailed Features Grid -->
+        <section id="features" class="py-32 relative px-4 sm:px-6 lg:px-8 max-w-screen-xl mx-auto">
+            <div class="mb-20">
+                <p class="mono text-cyan-400 text-xs tracking-widest mb-2">[CAPABILITIES]</p>
+                <h2 class="text-4xl md:text-6xl font-bold tracking-tight">Proof lives in what we run.</h2>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                
-                <!-- PRO Version Card -->
-                <div class="glass-card rounded-3xl p-10 relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-6 opacity-20">
-                        <i data-lucide="shield" class="w-24 h-24 text-cyan-400"></i>
+                <!-- Pro Version -->
+                <div class="glass-card rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+                    <div class="absolute top-6 right-6 mono text-xs text-gray-600">01 // PRO</div>
+                    <div class="inline-block px-3 py-1 rounded bg-cyan-500/10 text-cyan-400 text-xs font-mono tracking-widest mb-6 border border-cyan-500/20">
+                        SYSTEM MASTERY
                     </div>
-                    <div class="inline-block px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-bold tracking-wider mb-6 border border-cyan-500/30">
-                        PRO VERSION
-                    </div>
-                    <h3 class="text-3xl font-bold mb-4 text-white">System Mastery</h3>
-                    <p class="text-gray-400 text-lg mb-8 h-20">
-                        The core Jarvis experience. Seamlessly integrates with your OS to act as your digital proxy and intelligent assistant.
-                    </p>
+                    <h3 class="text-3xl font-bold mb-4 text-white">Core Intelligence</h3>
+                    <p class="text-gray-400 mb-8">Seamless OS integration providing digital proxy automation and instant visual inspection.</p>
                     
-                    <ul class="space-y-5">
+                    <ul class="space-y-6">
                         <li class="flex items-start gap-4">
-                            <div class="p-2 rounded-lg bg-gray-800 text-cyan-400 shrink-0"><i data-lucide="monitor-smartphone"></i></div>
+                            <div class="p-2 rounded bg-gray-900 text-cyan-400 shrink-0 border border-gray-800"><i data-lucide="monitor" class="w-5 h-5"></i></div>
                             <div>
-                                <h4 class="font-bold text-white text-lg">Screenshare Analysis</h4>
-                                <p class="text-gray-400 text-sm leading-relaxed">Jarvis can view your screen in real-time, helping you read documents, debug visible code, or translate content instantly.</p>
+                                <h4 class="font-bold text-white">Screenshare Analysis</h4>
+                                <p class="text-gray-400 text-sm mt-1">Live visual context processing for debugging, document reading, and immediate UI parsing.</p>
                             </div>
                         </li>
                         <li class="flex items-start gap-4">
-                            <div class="p-2 rounded-lg bg-gray-800 text-cyan-400 shrink-0"><i data-lucide="camera"></i></div>
+                            <div class="p-2 rounded bg-gray-900 text-cyan-400 shrink-0 border border-gray-800"><i data-lucide="message-square" class="w-5 h-5"></i></div>
                             <div>
-                                <h4 class="font-bold text-white text-lg">Live Camera Access</h4>
-                                <p class="text-gray-400 text-sm leading-relaxed">Grant camera access for real-world object recognition, spatial awareness, and visual troubleshooting.</p>
-                            </div>
-                        </li>
-                        <li class="flex items-start gap-4">
-                            <div class="p-2 rounded-lg bg-gray-800 text-cyan-400 shrink-0"><i data-lucide="message-square-dashed"></i></div>
-                            <div>
-                                <h4 class="font-bold text-white text-lg">WhatsApp Auto-Reply</h4>
-                                <p class="text-gray-400 text-sm leading-relaxed">Let Jarvis handle your chats. It reads incoming messages and formulates context-aware, human-like responses automatically.</p>
+                                <h4 class="font-bold text-white">WhatsApp Automation</h4>
+                                <p class="text-gray-400 text-sm mt-1">Autonomous conversational management responding naturally to incoming messaging threads.</p>
                             </div>
                         </li>
                     </ul>
                 </div>
 
-                <!-- ELITE Version Card -->
-                <div class="glass-card rounded-3xl p-10 relative overflow-hidden group border-emerald-500/30 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
-                    <div class="absolute top-0 right-0 p-6 opacity-20">
-                        <i data-lucide="sparkles" class="w-24 h-24 text-emerald-400"></i>
+                <!-- Elite Version -->
+                <div class="glass-card rounded-2xl p-8 lg:p-12 relative overflow-hidden border-emerald-500/30">
+                    <div class="absolute top-6 right-6 mono text-xs text-emerald-600">02 // ELITE</div>
+                    <div class="inline-block px-3 py-1 rounded bg-emerald-500/10 text-emerald-400 text-xs font-mono tracking-widest mb-6 border border-emerald-500/20">
+                        AUTONOMOUS EVOLUTION
                     </div>
-                    <div class="inline-block px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold tracking-wider mb-6 border border-emerald-500/30">
-                        ELITE VERSION
-                    </div>
-                    <h3 class="text-3xl font-bold mb-4 gradient-text-elite">Autonomous Evolution</h3>
-                    <p class="text-gray-300 text-lg mb-8 h-20">
-                        Everything in Pro, elevated. Elite Jarvis isn't just an assistant; it's a developer. It builds itself based on your commands.
-                    </p>
+                    <h3 class="text-3xl font-bold mb-4 gradient-text-elite">Self-Coding Engine</h3>
+                    <p class="text-gray-300 mb-8">Everything in Pro, upgraded with dynamic runtime code generation and software expansion.</p>
                     
-                    <ul class="space-y-5">
+                    <ul class="space-y-6">
                         <li class="flex items-start gap-4">
-                            <div class="p-2 rounded-lg bg-emerald-900/50 text-emerald-400 shrink-0"><i data-lucide="check-circle-2"></i></div>
+                            <div class="p-2 rounded bg-emerald-950/50 text-emerald-400 shrink-0 border border-emerald-500/20"><i data-lucide="code" class="w-5 h-5"></i></div>
                             <div>
-                                <h4 class="font-bold text-white text-lg">All Pro Features</h4>
-                                <p class="text-gray-400 text-sm leading-relaxed">Includes screenshare, camera access, and messaging automation out of the box.</p>
+                                <h4 class="font-bold text-white">Dynamic Self-Coding</h4>
+                                <p class="text-gray-400 text-sm mt-1">Request custom tools verbally; Elite builds, compiles, and runs the script instantly.</p>
                             </div>
                         </li>
                         <li class="flex items-start gap-4">
-                            <div class="p-2 rounded-lg bg-emerald-900/50 text-emerald-400 shrink-0"><i data-lucide="code-2"></i></div>
+                            <div class="p-2 rounded bg-emerald-950/50 text-emerald-400 shrink-0 border border-emerald-500/20"><i data-lucide="cpu" class="w-5 h-5"></i></div>
                             <div>
-                                <h4 class="font-bold text-white text-lg">Dynamic Self-Coding</h4>
-                                <p class="text-gray-400 text-sm leading-relaxed">Ask Jarvis to create a new module, and it will write the code internally, compile, and execute it on the fly.</p>
-                            </div>
-                        </li>
-                        <li class="flex items-start gap-4">
-                            <div class="p-2 rounded-lg bg-emerald-900/50 text-emerald-400 shrink-0"><i data-lucide="blocks"></i></div>
-                            <div>
-                                <h4 class="font-bold text-white text-lg">Infinite Feature Expansion</h4>
-                                <p class="text-gray-400 text-sm leading-relaxed">Tell it: "Add a feature to track my calories." Elite Jarvis programs the UI, logic, and database for it autonomously.</p>
+                                <h4 class="font-bold text-white">Infinite Modularity</h4>
+                                <p class="text-gray-400 text-sm mt-1">Full access to recursive script execution and priority feature rollouts.</p>
                             </div>
                         </li>
                     </ul>
                 </div>
-
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Pricing Section -->
-    <section id="pricing" class="py-32 bg-[#030305] relative">
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/10 via-[#030305] to-[#030305] -z-10"></div>
-        <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Pricing Section -->
+        <section id="pricing" class="py-32 relative px-4 sm:px-6 lg:px-8 max-w-screen-xl mx-auto">
             <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-6xl font-bold tracking-tight mb-4">Choose Your Platform</h2>
-                <p class="text-xl text-gray-400 mb-10">Direct purchase via WhatsApp. Instant delivery.</p>
+                <p class="mono text-cyan-400 text-xs tracking-widest mb-2">[LICENSING & PRICING]</p>
+                <h2 class="text-4xl md:text-6xl font-bold tracking-tight mb-8">Choose Your Platform.</h2>
                 
-                <!-- Toggle Phone/PC -->
-                <div class="inline-flex bg-gray-900 rounded-full p-1 border border-gray-800">
-                    <button id="btn-phone" onclick="switchTab('phone')" class="px-8 py-3 rounded-full text-sm font-bold bg-gray-800 text-white shadow-md transition-all">Phone Edition</button>
-                    <button id="btn-pc" onclick="switchTab('pc')" class="px-8 py-3 rounded-full text-sm font-bold text-gray-400 hover:text-white transition-all">PC Edition</button>
+                <div class="inline-flex bg-gray-900/80 rounded-xl p-1.5 border border-gray-800 backdrop-blur-md">
+                    <button id="btn-phone" onclick="switchTab('phone')" class="px-8 py-3 rounded-lg text-xs font-mono font-bold bg-cyan-500 text-black transition-all shadow-lg">PHONE EDITION</button>
+                    <button id="btn-pc" onclick="switchTab('pc')" class="px-8 py-3 rounded-lg text-xs font-mono font-bold text-gray-400 hover:text-white transition-all">PC EDITION</button>
                 </div>
             </div>
 
             <!-- Phone Pricing Cards -->
             <div id="pricing-phone" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-                <!-- Phone Pro -->
-                <div class="glass-card rounded-3xl p-8 flex flex-col h-full">
-                    <h3 class="text-2xl font-bold text-cyan-400 mb-2">Phone: PRO</h3>
-                    <p class="text-gray-400 mb-6">Essential system control and automation for your Android device.</p>
-                    
-                    <div class="space-y-4 mt-auto">
-                        <a href="pro(phone)/index.html" target="_blank" class="w-full flex items-center justify-center gap-2 px-4 py-3 mb-2 border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 rounded-xl font-bold transition-all text-sm shadow-[0_0_15px_rgba(6,182,212,0.15)]">
-                            <i data-lucide="smartphone"></i> See the UI
-                        </a>
-                        <div class="bg-black/50 p-4 rounded-xl border border-gray-800 flex items-center justify-between">
+                <div class="glass-card rounded-2xl p-8 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-6">
                             <div>
-                                <p class="text-white font-bold text-xl">₹350 (DIWALI OFFER!! DROPPED BY 200!)</p>
-                                <p class="text-sm text-gray-500">1 Year Plan</p>
+                                <h3 class="text-2xl font-bold text-white">Phone: PRO</h3>
+                                <p class="text-gray-400 text-sm mt-1">Essential Android system control</p>
                             </div>
-                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20the%20Phone%20Jarvis%20(Pro%20Version)%20-%201%20Year%20Plan%20for%20%E2%82%B9350." target="_blank" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors text-sm">Buy 1-Year</a>
+                            <a href="pro(phone)/index.html" target="_blank" class="text-xs mono text-cyan-400 border border-cyan-500/30 px-3 py-1.5 rounded bg-cyan-500/10 hover:bg-cyan-500/20 transition-all">Preview UI</a>
                         </div>
-                        <div class="bg-cyan-900/20 p-4 rounded-xl border border-cyan-500/30 flex items-center justify-between">
+                    </div>
+                    <div class="space-y-4 mt-8">
+                        <div class="bg-black/40 p-4 rounded-xl border border-gray-800 flex items-center justify-between">
                             <div>
-                                <p class="text-cyan-400 font-bold text-xl">₹700 (DIWALI OFFER!! DROPPED BY 300!)</p>
-                                <p class="text-sm text-cyan-600/80">Lifetime Plan</p>
+                                <p class="text-white font-bold text-lg">₹350 <span class="text-xs text-cyan-400 font-mono">(-200 Diwali Offer)</span></p>
+                                <p class="text-xs text-gray-500 mono">1 Year Plan</p>
                             </div>
-                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20the%20Phone%20Jarvis%20(Pro%20Version)%20-%20Lifetime%20Plan%20for%20%E2%82%B9700." target="_blank" class="px-4 py-2 btn-buy text-white rounded-lg font-bold transition-colors text-sm">Buy Lifetime</a>
+                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20Phone%20Jarvis%20Pro%20-%201%20Year%20for%20%E2%82%B9350." target="_blank" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs mono font-bold">BUY 1-YR</a>
+                        </div>
+                        <div class="bg-cyan-950/30 p-4 rounded-xl border border-cyan-500/30 flex items-center justify-between">
+                            <div>
+                                <p class="text-cyan-400 font-bold text-lg">₹700 <span class="text-xs text-cyan-300 font-mono">(-300 Diwali Offer)</span></p>
+                                <p class="text-xs text-cyan-600 mono">Lifetime Access</p>
+                            </div>
+                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20Phone%20Jarvis%20Pro%20-%20Lifetime%20for%20%E2%82%B9700." target="_blank" class="px-4 py-2 btn-buy text-white rounded-lg text-xs mono font-bold">BUY LIFETIME</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Phone Elite -->
-                <div class="glass-card rounded-3xl p-8 flex flex-col h-full border-emerald-500/30 relative">
-                    <div class="absolute -top-4 right-8 bg-emerald-500 text-black px-4 py-1 rounded-full text-xs font-black tracking-widest shadow-[0_0_15px_rgba(16,185,129,0.5)]">RECOMMENDED</div>
-                    <h3 class="text-2xl font-bold text-emerald-400 mb-2">Phone: ELITE</h3>
-                    <p class="text-gray-400 mb-6">Self-coding autonomous AI with future updates across all software.</p>
-                    
-                    <div class="space-y-4 mt-auto">
-                        <a href="elite(phone)/orb.html" target="_blank" class="w-full flex items-center justify-center gap-2 px-4 py-3 mb-2 border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-xl font-bold transition-all text-sm shadow-[0_0_15px_rgba(16,185,129,0.15)]">
-                            <i data-lucide="aperture"></i> See the UI & Blob
-                        </a>
-                        <div class="bg-black/50 p-4 rounded-xl border border-gray-800 flex items-center justify-between">
+                <div class="glass-card rounded-2xl p-8 flex flex-col justify-between border-emerald-500/30 relative">
+                    <div class="absolute -top-3 right-6 bg-emerald-500 text-black px-3 py-0.5 rounded text-[10px] font-mono font-black tracking-widest shadow-lg">RECOMMENDED</div>
+                    <div>
+                        <div class="flex justify-between items-start mb-6">
                             <div>
-                                <p class="text-white font-bold text-xl">₹650 (DIWALI OFFER!! DROPPED BY 500!!)</p>
-                                <p class="text-sm text-gray-500">1 Year Plan</p>
+                                <h3 class="text-2xl font-bold text-white">Phone: ELITE</h3>
+                                <p class="text-gray-400 text-sm mt-1">Autonomous self-coding intelligence</p>
                             </div>
-                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20the%20Phone%20Jarvis%20(Elite%20Version)%20-%201%20Year%20Plan%20for%20%E2%82%B9650." target="_blank" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors text-sm">Buy 1-Year</a>
+                            <a href="elite(phone)/orb.html" target="_blank" class="text-xs mono text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 transition-all">Preview UI</a>
                         </div>
-                        <div class="bg-emerald-900/20 p-4 rounded-xl border border-emerald-500/30 flex items-center justify-between">
+                    </div>
+                    <div class="space-y-4 mt-8">
+                        <div class="bg-black/40 p-4 rounded-xl border border-gray-800 flex items-center justify-between">
                             <div>
-                                <p class="text-emerald-400 font-bold text-xl">₹1200 (DIWALI OFFER!! DROPPED BY 700!!)</p>
-                                <p class="text-sm text-emerald-600/80">Lifetime Plan</p>
+                                <p class="text-white font-bold text-lg">₹650 <span class="text-xs text-emerald-400 font-mono">(-500 Diwali Offer)</span></p>
+                                <p class="text-xs text-gray-500 mono">1 Year Plan</p>
                             </div>
-                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20the%20Phone%20Jarvis%20(Elite%20Version)%20-%20Lifetime%20Plan%20for%20%E2%82%B91200." target="_blank" class="px-4 py-2 btn-elite text-white rounded-lg font-bold transition-colors text-sm">Buy Lifetime</a>
+                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20Phone%20Jarvis%20Elite%20-%201%20Year%20for%20%E2%82%B9650." target="_blank" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs mono font-bold">BUY 1-YR</a>
+                        </div>
+                        <div class="bg-emerald-950/30 p-4 rounded-xl border border-emerald-500/30 flex items-center justify-between">
+                            <div>
+                                <p class="text-emerald-400 font-bold text-lg">₹1200 <span class="text-xs text-emerald-300 font-mono">(-700 Diwali Offer)</span></p>
+                                <p class="text-xs text-emerald-600 mono">Lifetime Access</p>
+                            </div>
+                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20Phone%20Jarvis%20Elite%20-%20Lifetime%20for%20%E2%82%B91200." target="_blank" class="px-4 py-2 btn-elite text-white rounded-lg text-xs mono font-bold">BUY LIFETIME</a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- PC Pricing Cards (Initially Hidden) -->
+            <!-- PC Pricing Cards -->
             <div id="pricing-pc" class="hidden grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-                <!-- PC Pro -->
-                <div class="glass-card rounded-3xl p-8 flex flex-col h-full">
-                    <h3 class="text-2xl font-bold text-cyan-400 mb-2">PC: PRO</h3>
-                    <p class="text-gray-400 mb-6">Complete desktop integration, window management, and task automation.</p>
-                    
-                    <div class="space-y-4 mt-auto">
-                        <div class="bg-black/50 p-4 rounded-xl border border-gray-800 flex items-center justify-between">
+                <div class="glass-card rounded-2xl p-8 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-2">PC: PRO</h3>
+                        <p class="text-gray-400 text-sm mb-6">Complete desktop workspace integration</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-black/40 p-4 rounded-xl border border-gray-800 flex items-center justify-between">
                             <div>
-                                <p class="text-white font-bold text-xl">₹800 (DIWALI OFFER!! DROPPED BY 400!)</p>
-                                <p class="text-sm text-gray-500">1 Year Plan</p>
+                                <p class="text-white font-bold text-lg">₹800 <span class="text-xs text-cyan-400 font-mono">(-400 Offer)</span></p>
+                                <p class="text-xs text-gray-500 mono">1 Year Plan</p>
                             </div>
-                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20the%20PC%20Jarvis%20(Pro%20Version)%20-%201%20Year%20Plan%20for%20%E2%82%B9800." target="_blank" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors text-sm">Buy 1-Year</a>
+                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20PC%20Jarvis%20Pro%20-%201%20Year%20for%20%E2%82%B9800." target="_blank" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs mono font-bold">BUY 1-YR</a>
                         </div>
-                        <div class="bg-cyan-900/20 p-4 rounded-xl border border-cyan-500/30 flex items-center justify-between">
+                        <div class="bg-cyan-950/30 p-4 rounded-xl border border-cyan-500/30 flex items-center justify-between">
                             <div>
-                                <p class="text-cyan-400 font-bold text-xl">₹1500 (DIWALI OFFER!! DROPPED BY 500!!)</p>
-                                <p class="text-sm text-cyan-600/80">Lifetime Plan</p>
+                                <p class="text-cyan-400 font-bold text-lg">₹1500 <span class="text-xs text-cyan-300 font-mono">(-500 Offer)</span></p>
+                                <p class="text-xs text-cyan-600 mono">Lifetime Access</p>
                             </div>
-                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20the%20PC%20Jarvis%20(Pro%20Version)%20-%20Lifetime%20Plan%20for%20%E2%82%B91500." target="_blank" class="px-4 py-2 btn-buy text-white rounded-lg font-bold transition-colors text-sm">Buy Lifetime</a>
+                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20PC%20Jarvis%20Pro%20-%20Lifetime%20for%20%E2%82%B91500." target="_blank" class="px-4 py-2 btn-buy text-white rounded-lg text-xs mono font-bold">BUY LIFETIME</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- PC Elite -->
-                <div class="glass-card rounded-3xl p-8 flex flex-col h-full border-emerald-500/30 relative">
-                    <div class="absolute -top-4 right-8 bg-emerald-500 text-black px-4 py-1 rounded-full text-xs font-black tracking-widest shadow-[0_0_15px_rgba(16,185,129,0.5)]">ULTIMATE</div>
-                    <h3 class="text-2xl font-bold text-emerald-400 mb-2">PC: ELITE</h3>
-                    <p class="text-gray-400 mb-6">Unrestricted terminal access, live self-scripting, and advanced software creation.</p>
-                    
-                    <div class="space-y-4 mt-auto">
-                        <div class="bg-black/50 p-4 rounded-xl border border-gray-800 flex items-center justify-between">
+                <div class="glass-card rounded-2xl p-8 flex flex-col justify-between border-emerald-500/30 relative">
+                    <div class="absolute -top-3 right-6 bg-emerald-500 text-black px-3 py-0.5 rounded text-[10px] font-mono font-black tracking-widest shadow-lg">ULTIMATE</div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-2">PC: ELITE</h3>
+                        <p class="text-gray-400 text-sm mb-6">Unrestricted terminal control and self-scripting</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-black/40 p-4 rounded-xl border border-gray-800 flex items-center justify-between">
                             <div>
-                                <p class="text-white font-bold text-xl">₹1200 (DIWALI OFFER!! DROPPED BY 400!)</p>
-                                <p class="text-sm text-gray-500">1 Year Plan</p>
+                                <p class="text-white font-bold text-lg">₹1200 <span class="text-xs text-emerald-400 font-mono">(-400 Offer)</span></p>
+                                <p class="text-xs text-gray-500 mono">1 Year Plan</p>
                             </div>
-                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20the%20PC%20Jarvis%20(Elite%20Version)%20-%201%20Year%20Plan%20for%20%E2%82%B91200." target="_blank" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors text-sm">Buy 1-Year</a>
+                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20PC%20Jarvis%20Elite%20-%201%20Year%20for%20%E2%82%B91200." target="_blank" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs mono font-bold">BUY 1-YR</a>
                         </div>
-                        <div class="bg-emerald-900/20 p-4 rounded-xl border border-emerald-500/30 flex items-center justify-between">
+                        <div class="bg-emerald-950/30 p-4 rounded-xl border border-emerald-500/30 flex items-center justify-between">
                             <div>
-                                <p class="text-emerald-400 font-bold text-xl">₹2500 (DIWALI OFFER!! DROPPED BY 600!)</p>
-                                <p class="text-sm text-emerald-600/80">Lifetime Plan</p>
+                                <p class="text-cyan-400 font-bold text-lg">₹2500 <span class="text-xs text-emerald-300 font-mono">(-600 Offer)</span></p>
+                                <p class="text-xs text-emerald-600 mono">Lifetime Access</p>
                             </div>
-                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20the%20PC%20Jarvis%20(Elite%20Version)%20-%20Lifetime%20Plan%20for%20%E2%82%B92500." target="_blank" class="px-4 py-2 btn-elite text-white rounded-lg font-bold transition-colors text-sm">Buy Lifetime</a>
+                            <a href="https://wa.me/916200660489?text=Hi!%20I%20want%20to%20buy%20PC%20Jarvis%20Elite%20-%20Lifetime%20for%20%E2%82%B92500." target="_blank" class="px-4 py-2 btn-elite text-white rounded-lg text-xs mono font-bold">BUY LIFETIME</a>
                         </div>
                     </div>
                 </div>
             </div>
+        </section>
 
-        </div>
-    </section>
-
-    <!-- Setup Guide -->
-    <section id="setup" class="py-24 bg-[#0a0a0c]">
-        <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-16 text-center">Deployment in 3 steps.</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-                <div class="flex flex-col items-center">
-                    <div class="w-16 h-16 rounded-full bg-cyan-900/30 flex items-center justify-center text-cyan-400 mb-6 border border-cyan-500/20">
-                        <i data-lucide="message-square" class="w-8 h-8"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">1. Order via WhatsApp</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Select your plan above. You'll be redirected to WhatsApp to complete the secure payment and instantly receive your software files.</p>
-                </div>
-                <div class="flex flex-col items-center">
-                    <div class="w-16 h-16 rounded-full bg-fuchsia-900/30 flex items-center justify-center text-fuchsia-400 mb-6 border border-fuchsia-500/20">
-                        <i data-lucide="key" class="w-8 h-8"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">2. Bind the Engine</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Install the app and paste your Gemini Pro/Flash API key from Google AI Studio into the secure setup menu.</p>
-                </div>
-                <div class="flex flex-col items-center">
-                    <div class="w-16 h-16 rounded-full bg-emerald-900/30 flex items-center justify-center text-emerald-400 mb-6 border border-emerald-500/20">
-                        <i data-lucide="power" class="w-8 h-8"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">3. Take Control</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Grant necessary permissions (Mic, Camera, Accessibility). Command JARVIS and watch it execute or evolve.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ Section -->
-    <section id="faq" class="py-32 bg-[#030305] border-t border-gray-900">
-        <div class="max-w-3xl mx-auto px-4">
-            <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-12 text-center">Frequently Asked Questions</h2>
+        <!-- FAQ Section -->
+        <section id="faq" class="py-32 border-t border-gray-900 px-4 max-w-3xl mx-auto">
+            <p class="mono text-cyan-400 text-xs tracking-widest text-center mb-2">[SUPPORT & Q&A]</p>
+            <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-16 text-center">Frequently Asked Questions</h2>
             
             <div class="space-y-4">
-                <details class="group glass-card p-6 rounded-2xl cursor-pointer">
-                    <summary class="flex justify-between items-center font-bold text-lg outline-none">
-                        <span>What exactly does the Elite version do differently?</span>
-                        <span class="transition group-open:rotate-180 text-cyan-400">
-                            <i data-lucide="chevron-down"></i>
-                        </span>
+                <details class="group glass-card p-6 rounded-xl cursor-pointer">
+                    <summary class="flex justify-between items-center font-bold text-base outline-none">
+                        <span>How does Elite self-coding work?</span>
+                        <span class="transition group-open:rotate-180 text-cyan-400"><i data-lucide="chevron-down"></i></span>
                     </summary>
-                    <div class="text-gray-400 mt-4 text-base leading-relaxed border-t border-gray-800 pt-4">
-                        The Elite version features autonomous self-coding. If you need a specific capability that Jarvis doesn't currently have, you just ask it. It will write the code itself, compile it, and integrate the new feature directly into its own system. It's an AI that continuously evolves based on your needs.
+                    <div class="text-gray-400 mt-4 text-sm leading-relaxed border-t border-gray-800 pt-4">
+                        When you request a missing capability, Elite writes the required script, compiles it in runtime, and installs the module directly into its own architecture without manual intervention.
                     </div>
                 </details>
 
-                <details class="group glass-card p-6 rounded-2xl cursor-pointer">
-                    <summary class="flex justify-between items-center font-bold text-lg outline-none">
-                        <span>Is this a subscription?</span>
-                        <span class="transition group-open:rotate-180 text-cyan-400">
-                            <i data-lucide="chevron-down"></i>
-                        </span>
-                    </summary>
-                    <div class="text-gray-400 mt-4 text-base leading-relaxed border-t border-gray-800 pt-4">
-                        We offer both 1-Year and Lifetime access. If you purchase the Lifetime plan, you will never pay us a subscription fee. Note that you provide your own Google Gemini API key (which has a free tier available for developers).
-                    </div>
-                </details>
-
-                <details class="group glass-card p-6 rounded-2xl cursor-pointer">
-                    <summary class="flex justify-between items-center font-bold text-lg outline-none">
+                <details class="group glass-card p-6 rounded-xl cursor-pointer">
+                    <summary class="flex justify-between items-center font-bold text-base outline-none">
                         <span>How is the software delivered?</span>
-                        <span class="transition group-open:rotate-180 text-cyan-400">
-                            <i data-lucide="chevron-down"></i>
-                        </span>
+                        <span class="transition group-open:rotate-180 text-cyan-400"><i data-lucide="chevron-down"></i></span>
                     </summary>
-                    <div class="text-gray-400 mt-4 text-base leading-relaxed border-t border-gray-800 pt-4">
-                        Once you select your plan and contact us via WhatsApp, we will process your payment and directly send you the APK file (for Phone) or Executable files (for PC) along with a step-by-step setup guide.
-                    </div>
-                </details>
-
-                <details class="group glass-card p-6 rounded-2xl cursor-pointer">
-                    <summary class="flex justify-between items-center font-bold text-lg outline-none">
-                        <span>Do I get future updates?</span>
-                        <span class="transition group-open:rotate-180 text-cyan-400">
-                            <i data-lucide="chevron-down"></i>
-                        </span>
-                    </summary>
-                    <div class="text-gray-400 mt-4 text-base leading-relaxed border-t border-gray-800 pt-4">
-                        Yes, Lifetime plans for the Elite version include access to all future core software updates pushed by our development team.
+                    <div class="text-gray-400 mt-4 text-sm leading-relaxed border-t border-gray-800 pt-4">
+                        Purchases are processed via WhatsApp where files (APK or PC executable package) and secure setup guides are transmitted instantly.
                     </div>
                 </details>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Footer -->
-    <footer class="border-t border-gray-900 bg-[#0a0a0c] py-12">
-        <div class="max-w-screen-xl mx-auto px-4 text-center text-sm text-gray-500">
-            <h3 class="text-2xl font-black text-white mb-6 tracking-widest">JARVIS</h3>
-            
-            <div class="flex items-center justify-center gap-4 mb-8">
-                <a href="https://instagram.com/jarvisxali" target="_blank" class="w-10 h-10 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center text-gray-400 hover:text-pink-500 hover:border-pink-500 transition-all shadow-lg" title="Follow us on Instagram">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                    </svg>
-                </a>
-                <a href="https://wa.me/916200660489?text=Hi!%20I'm%20interested%20in%20Jarvis." target="_blank" class="w-10 h-10 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center text-gray-400 hover:text-green-500 hover:border-green-500 transition-all shadow-lg" title="Contact on WhatsApp">
-                    <i data-lucide="message-circle" class="w-5 h-5"></i>
-                </a>
-            </div>
-
+        <!-- Footer -->
+        <footer class="border-t border-gray-900 bg-[#030305] py-12 text-center text-xs text-gray-500">
+            <h3 class="text-lg font-black text-white mb-4 mono tracking-widest">JARVISXALI</h3>
             <p class="mb-2">© 2026 JARVIS Hub by Ali. All rights reserved.</p>
-            <p class="text-xs text-gray-600">JARVIS is an independent software application. Not affiliated with Marvel, Disney, or Google LLC.</p>
-            <p class="text-xs text-gray-600">Gemini is a trademark of Google LLC. Users must adhere to Google's API Terms of Service.</p>
-        </div>
-    </footer>
+            <p class="text-gray-600">Independent application. Not affiliated with Marvel, Disney, or Google LLC.</p>
+        </footer>
+    </div>
 
     <!-- Scripts -->
     <script>
-        // Initialize Lucide Icons
         lucide.createIcons();
 
-        // Pricing Tabs Logic
+        // Pricing Tab Switcher
         function switchTab(tab) {
             const phoneGrid = document.getElementById('pricing-phone');
             const pcGrid = document.getElementById('pricing-pc');
@@ -555,62 +439,120 @@
                 pcGrid.classList.add('hidden');
                 pcGrid.classList.remove('grid');
 
-                btnPhone.className = "px-8 py-3 rounded-full text-sm font-bold bg-gray-800 text-white shadow-md transition-all";
-                btnPc.className = "px-8 py-3 rounded-full text-sm font-bold text-gray-400 hover:text-white transition-all";
+                btnPhone.className = "px-8 py-3 rounded-lg text-xs font-mono font-bold bg-cyan-500 text-black transition-all shadow-lg";
+                btnPc.className = "px-8 py-3 rounded-lg text-xs font-mono font-bold text-gray-400 hover:text-white transition-all";
             } else {
                 pcGrid.classList.remove('hidden');
                 pcGrid.classList.add('grid');
                 phoneGrid.classList.add('hidden');
                 phoneGrid.classList.remove('grid');
 
-                btnPc.className = "px-8 py-3 rounded-full text-sm font-bold bg-gray-800 text-white shadow-md transition-all";
-                btnPhone.className = "px-8 py-3 rounded-full text-sm font-bold text-gray-400 hover:text-white transition-all";
+                btnPc.className = "px-8 py-3 rounded-lg text-xs font-mono font-bold bg-cyan-500 text-black transition-all shadow-lg";
+                btnPhone.className = "px-8 py-3 rounded-lg text-xs font-mono font-bold text-gray-400 hover:text-white transition-all";
             }
         }
 
-        // Initialize GSAP
+        // Multi-Agent Cursors Simulation Engine
+        const cursorContainer = document.getElementById('cursor-container');
+        const agentNames = ['Agent-Alpha', 'Dev-Bot', 'Ali-Studio', 'Jarvis-Core', 'Node-7', 'Sync-Bot', 'UI-Builder'];
+        const agentColors = ['#06b6d4', '#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6'];
+
+        const cursors = Array.from({ length: 8 }, (_, i) => {
+            const el = document.createElement('div');
+            el.className = 'sim-cursor flex items-center gap-1.5';
+            const color = agentColors[i % agentColors.length];
+            el.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="${color}" stroke="#000" stroke-width="1.5">
+                    <polygon points="5 3 19 12 12 14 9 21 5 3"></polygon>
+                </svg>
+                <span style="background:${color}; color:#000; font-size:10px; font-family:monospace; padding:1px 6px; border-radius:4px; font-weight:bold; box-shadow:0 2px 10px rgba(0,0,0,0.5);">${agentNames[i % agentNames.length]}</span>
+            `;
+            cursorContainer.appendChild(el);
+            return {
+                element: el,
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                targetX: Math.random() * window.innerWidth,
+                targetY: Math.random() * window.innerHeight,
+                speed: 0.02 + Math.random() * 0.03
+            };
+        });
+
+        function updateCursors() {
+            cursors.forEach(c => {
+                c.x += (c.targetX - c.x) * c.speed;
+                c.y += (c.targetY - c.y) * c.speed;
+
+                if (Math.abs(c.targetX - c.x) < 50 && Math.abs(c.targetY - c.y) < 50) {
+                    c.targetX = Math.random() * window.innerWidth;
+                    c.targetY = Math.random() * window.innerHeight;
+                }
+
+                c.element.style.transform = `translate(${c.x}px, ${c.y}px)`;
+            });
+            requestAnimationFrame(updateCursors);
+        }
+        updateCursors();
+
+        // Background Canvas Grid Pattern
+        const canvas = document.getElementById('sim-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+
+            const gridSize = 40;
+            for (let x = 0; x < canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+        drawGrid();
+
+        // GSAP Assembly Animation
         gsap.registerPlugin(ScrollTrigger);
 
-        // Hero Animation
-        gsap.fromTo(".hero-text", 
-            { opacity: 0, y: 30, scale: 0.98 }, 
-            { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: "power3.out" }
-        );
+        gsap.to(".hero-text", {
+            opacity: 1,
+            y: 0,
+            duration: 1.5,
+            ease: "power3.out",
+            delay: 0.2
+        });
 
-        // Scroll Narrative Animation (Sticky Crossfade)
-        const texts = gsap.utils.toArray('.scroll-text');
-        
-        texts.forEach((text, i) => {
-            gsap.fromTo(text, 
-                { opacity: 0, y: 50, scale: 0.9 },
+        gsap.utils.toArray('.glass-card').forEach((card) => {
+            gsap.fromTo(card,
+                { opacity: 0, y: 50, scale: 0.95 },
                 {
-                    opacity: 1, 
-                    y: 0, 
+                    opacity: 1,
+                    y: 0,
                     scale: 1,
+                    duration: 1,
+                    ease: "power3.out",
                     scrollTrigger: {
-                        trigger: "#scroll-narrative",
-                        start: () => `top+=${i * window.innerHeight} top`,
-                        end: () => `top+=${(i + 1) * window.innerHeight} top`,
-                        scrub: 1,
-                        toggleActions: "play reverse play reverse",
+                        trigger: card,
+                        start: "top 85%",
+                        toggleActions: "play none none reverse"
                     }
                 }
             );
-
-            // Fade out as the next one comes in (except for the last one)
-            if (i < texts.length - 1) {
-                gsap.to(text, {
-                    opacity: 0,
-                    y: -50,
-                    scale: 1.05,
-                    scrollTrigger: {
-                        trigger: "#scroll-narrative",
-                        start: () => `top+=${(i + 0.8) * window.innerHeight} top`,
-                        end: () => `top+=${(i + 1) * window.innerHeight} top`,
-                        scrub: 1,
-                    }
-                });
-            }
         });
     </script>
 </body>
